@@ -22,6 +22,8 @@ dtm aims to track only files in the user's home directory. It tracks configurati
 
 **sync DIR**: Copy (or create links to) all files in DIR whose relative path to DIR is in the list of tracked files. If the flag '--symbolic' is present, then it will create symbolic link
 
+**edit, -e**: Edit the list of files being tracked manually.
+
 ## EXAMPLES
 
 Add single file to track list:

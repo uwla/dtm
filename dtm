@@ -29,7 +29,10 @@ COMMANDS
 		Copy all files being tracked to the specified directory.
 
 	-s, sync DIR
-		Copy all files in DIR whose relative path to DIR is in the list of tracked files.
+		Copy (or create links from) all files in DIR whose relative path to DIR is in the list of tracked files. Syntax is the same as for command 'link'
+
+	-e, edit
+		Edit the list of files being tracked manually.
 
 EXAMPLES
 	Add single file to track list
@@ -139,11 +142,11 @@ function untrackFiles() {
 	[[ "$1" == "--all" ]] && untrackAll
 
 	# we could use 'sed' to delete the line containing the name
-  # of the file to untrack. However, this would cause bugs with
+	# of the file to untrack. However, this would cause bugs with
 	# file names that have special characters. Therefore, it is
 	# safer to do this manually using shell script.
 
-  #	create a copy of files being tracked
+	# create a copy of files being tracked
 	tmpfile=${DTM_TRACKED_FILES_LIST}.tmp
 	cp $DTM_TRACKED_FILES_LIST $tmpfile
 
@@ -249,6 +252,9 @@ case $action in
 		;;
 	add|-a)
 		trackFiles $@
+		;;
+	edit|-e)
+		$EDITOR $DTM_TRACKED_FILES_LIST
 		;;
 	rm|-r)
 		untrackFiles $@
