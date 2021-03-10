@@ -12,17 +12,19 @@ dtm aims to track only files in the user's home directory. It tracks configurati
 
 **add PATH**: Start tracking one or more files.
 
+**edit, -e**: Edit the list of files being tracked manually.
+
 **rm PATH FLAGS**: Stop tracking the given files. If the flag '--all' is present, remove all files from the track list.
 
-**list, ls **: List which files are being tracked
+**list, ls **: List files being tracked
 
-**ln, link, DIR FLAGS**: Create links of all files being tracked to DIR. If the flag '--symbolic' is present, then it will create symbolic links. Otherwise, it will create hard links
+**ln, link, DIR FLAGS**: Create links of tracked files from \$HOME to DIR. If flag '--symbolic' is present, then it will create symbolic links. Otherwise, it will create hard links
 
-**cp, copy DIR**: Copy all files being tracked to the specified directory.
+**cp, copy DIR**: Copy all files being trackedi from \$HOME to DIR.
 
-**sync DIR**: Copy (or create links to) all files in DIR whose relative path to DIR is in the list of tracked files. If the flag '--symbolic' is present, then it will create symbolic link
+**sync DIR FLAGS**: Sync dot files from DIR to the HOME directory. If flag '--copy' is present, the files will be copied. If flag '--symbolic' is present, it will create symbolic links. Otherwise, it will create hard links.
 
-**edit, -e**: Edit the list of files being tracked manually.
+**sync-dirs, -S TARGET DEST FLAGS**: Sync dot files from TARGET to DEST. Syntax is the same as for the command sync. 
 
 ## EXAMPLES
 
@@ -74,28 +76,45 @@ Copy tracked files to specificied dir:
 dtm cp my-projects/github/dotfiles
 ```
 
-Copy files from DIR to `$HOME` directory whose path relative to DIR is in the track list:
+Copy tracked files from DIR to `$HOME`.
 
 ```
 dtm sync my-projects/github/dotfiles --copy
 ```
 
-Create hard links of file from DIR to `$HOME` directory whose path relative to DIR is in the track list:
+Create hard links tracked files from DIR to `$HOME`.
 
 ```
 dtm sync my-projects/github/dotfiles 
 ```
 
-Create symbolic links of file from DIR to `$HOME` directory whose path relative to DIR is in the track list:
+Create symbolic links from tracked file from DIR to `$HOME`.
 
 ```
 dtm sync my-projects/github/dotfiles 
+```
+
+Copy tracked files from SOURCE to TARGET
+
+```
+dtm -S source/ target/ --copy 
+```
+
+Create hard links of tracked files from SOURCE to TARGET
+
+```
+dtm -S source/ target/
+```
+
+Create symbolic links of tracked files from SOURCE to TARGET
+
+```
+dtm -S source/ target/ --copy 
 ```
 
 ## ENVIRONMENT VARIABLES
 
-**DTM_CONFIG_HOME**: The path where to store data files, such as the list of tracked files. By default it is `$XDG_CONFIG_HOME/dtm`. If `$XDG_CONFIG_HOME` is unset, then `$DTM_CONFIG_HOME` default to `$HOME/.local/share/dtm`.
-
+**DTM_CONFIG_HOME**: The path where to store the list of tracked files. By default it is `$XDG_CONFIG_HOME/dtm`. If `$XDG_CONFIG_HOME` is unset, then `$DTM_CONFIG_HOME` default to `$HOME/.local/share/dtm`.
 **DTM_GIT_DIR**: The path of the default git directory. This is used as a fallback if DIR is not specified for the dtm's commands ln, cp, and sync.
 
 ## LICENSE
