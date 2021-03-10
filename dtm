@@ -69,8 +69,8 @@ EXAMPLES
 		dtm sync my-projects/github/dotfiles 
 
 ENVIRONMENT VARIABLES
-	DTM_DATA_HOME
-		The path where to store data files, such as the list of tracked files. By default it is \$XDG_DATA_HOME/dtm. If \$XDG_DATA_HOME is unset, then \$DTM_DATA_HOME default to \$HOME/.local/share/dtm.
+	DTM_CONFIG_HOME
+		The path where to store data files, such as the list of tracked files. By default it is \$XDG_CONFIG_HOME/dtm. If \$XDG_CONFIG_HOME is unset, then \$DTM_CONFIG_HOME default to \$HOME/.local/share/dtm.
 	DTM_GIT_DIR
 		The path of the default git directory. This is used as a fallback if DIR is not specified for the dtm's commands ln, cp, and sync.
 
@@ -83,19 +83,19 @@ EOF
 }
 
 # variables
-if [[ -z $DTM_DATA_HOME  ]]; then
-	if [[ -n ${XDG_DATA_HOME} ]]; then
-		DTM_DATA_HOME=${XDG_DATA_HOME}/dtm
+if [[ -z $DTM_CONFIG_HOME  ]]; then
+	if [[ -n ${XDG_CONFIG_HOME} ]]; then
+		DTM_CONFIG_HOME=${XDG_CONFIG_HOME}/dtm
 	else
-		DTM_DATA_HOME=${HOME}/.local/share/dtm
+		DTM_CONFIG_HOME=${HOME}/.config/dtm
 	fi
 fi
 
-DTM_TRACKED_FILES_LIST=${DTM_DATA_HOME}/tracked-files.txt
+DTM_TRACKED_FILES_LIST=${DTM_CONFIG_HOME}/tracked-files.txt
 
 # create files that DTM will use to track dot files
 function createDataFiles() {
-	mkdir -p ${DTM_DATA_HOME}
+	mkdir -p ${DTM_CONFIG_HOME}
 	touch $DTM_TRACKED_FILES_LIST
 }
 

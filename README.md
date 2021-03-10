@@ -94,7 +94,7 @@ dtm sync my-projects/github/dotfiles
 
 ## ENVIRONMENT VARIABLES
 
-**DTM_DATA_HOME**: The path where to store data files, such as the list of tracked files. By default it is `$XDG_DATA_HOME/dtm`. If `$XDG_DATA_HOME` is unset, then `$DTM_DATA_HOME` default to `$HOME/.local/share/dtm`.
+**DTM_CONFIG_HOME**: The path where to store data files, such as the list of tracked files. By default it is `$XDG_CONFIG_HOME/dtm`. If `$XDG_CONFIG_HOME` is unset, then `$DTM_CONFIG_HOME` default to `$HOME/.local/share/dtm`.
 
 **DTM_GIT_DIR**: The path of the default git directory. This is used as a fallback if DIR is not specified for the dtm's commands ln, cp, and sync.
 
