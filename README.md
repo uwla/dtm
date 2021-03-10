@@ -6,7 +6,7 @@ A simple script to manage dot files.
 
 dtm is a shell script to manage configuration files (also known as dot files) in your home directory. It is simple, flexible, and can be extended to be used with GIT.
 
-dtm aims to track only files in the user's home directory. It tracks configuration files by keeping a list of the path of those files relative to the \$HOME directory.
+dtm aims to track only files in the user's home directory. It tracks configuration files by keeping a list of the path of those files relative to the $HOME directory.
 
 ## COMMANDS
 
@@ -14,13 +14,13 @@ dtm aims to track only files in the user's home directory. It tracks configurati
 
 **rm PATH FLAGS**: Stop tracking the given files. If the flag '--all' is present, remove all files from the track list.
 
-**list, ls**: List which files are being tracked
+**list, ls **: List which files are being tracked
 
-**ln, link DIR FLAGS**: Create links of all files being tracked to DIR.If the flag '--symbolic' is present, then it will create symbolic links. Otherwise, it will create hard links
+**ln, link, DIR FLAGS**: Create links of all files being tracked to DIR. If the flag '--symbolic' is present, then it will create symbolic links. Otherwise, it will create hard links
 
 **cp, copy DIR**: Copy all files being tracked to the specified directory.
 
-**sync DIR**: Copy all files in DIR whose relative path to DIR is in the list of tracked files.
+**sync DIR**: Copy (or create links to) all files in DIR whose relative path to DIR is in the list of tracked files. If the flag '--symbolic' is present, then it will create symbolic link
 
 ## EXAMPLES
 
@@ -103,4 +103,3 @@ Do whatever you wish with the code of dtm.
 ## AUTHOR
 
 Andre Souza Abreu.
-

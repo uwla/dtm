@@ -5,80 +5,77 @@ function showHelp() {
 DTWM - DOT FILES MANAGER
 
 NAME
-		dtm - a simple script to manage dot files.
+	dtm - a simple script to manage dot files.
 
 DESCRIPTION
-		dtm is a shell script to manage configuration files (also known as dot files) in your home directory. It is simple, flexible, and can be extended to be used with GIT.
+	dtm is a shell script to manage configuration files (also known as dot files) in your home directory. It is simple, flexible, and can be extended to be used with GIT.
 
-		dtm aims to track only files in the user's home directory. It tracks configuration files by keeping a list of the path of those files relative to the \$HOME directory.
+	dtm aims to track only files in the user's home directory. It tracks configuration files by keeping a list of the path of those files relative to the \$HOME directory.
 
 COMMANDS
-		add PATH
-			Start tracking one or more files.
+	-a, add PATH
+		Start tracking one or more files.
 
-		rm PATH FLAGS
-			Stop tracking the given files. If the flag '--all' is present, remove all files from the track list.
+	-r, rm PATH FLAGS
+		Stop tracking the given files. If the flag '--all' is present, remove all files from the track list.
 
-		list, ls
-			List which files are being tracked
+	-l, list, ls
+		List which files are being tracked
 
-		ln, link DIR FLAGS
-			Create links of all files being tracked to DIR.If the flag '--symbolic' is present, then it will create symbolic links. Otherwise, it will create hard links
+	-L, ln, link DIR FLAGS
+		Create links of all files being tracked to DIR.If the flag '--symbolic' is present, then it will create symbolic links. Otherwise, it will create hard links
 
-		cp, copy DIR
-			Copy all files being tracked to the specified directory.
+	-c, cp, copy DIR
+		Copy all files being tracked to the specified directory.
 
-		sync DIR
-			Copy all files in DIR whose relative path to DIR is in the list of tracked files.
+	-s, sync DIR
+		Copy all files in DIR whose relative path to DIR is in the list of tracked files.
 
 EXAMPLES
+	Add single file to track list
+		dtm add ~/.bashrc
 
-		Add single file to track list
-			dtm add ~/.bashrc
+	Add multiple files to track list
+		dtm add ~/.config/ranger/*
 
-		Add multiple files to track list
-			dtm add ~/.config/ranger/*
+	Remove file from track list
+		dtm rm .config/i3/config
 
-		Remove file from track list
-			dtm rm .config/i3/config
+	Remove files from track list
+		dtm rm ~/.vimrc/*
 
-		Remove files from track list
-			dtm rm ~/.vimrc/*
+	Remove all tracked fiels from track list
+		dtm rm --all
 
-		Remove all tracked fiels from track list
-			dtm rm --all
+	Create hard links of tracked files to specified dir
+		dtm ln my-projects/github/dotfiles
 
-		Create hard links of tracked files to specified dir
-			dtm ln my-projects/github/dotfiles
+	Create symbolic links of tracked files to specified dir
+		dtm ln my-projects/github/dotfiles --symbolic
 
-		Create symbolic links of tracked files to specified dir
-			dtm ln my-projects/github/dotfiles --symbolic
+	Copy tracked files to specificied dir
+		dtm cp my-projects/github/dotfiles
 
-		Copy tracked files to specificied dir
-			dtm cp my-projects/github/dotfiles
+	Copy files from DIR to \$HOME directory whose path relative to DIR is in the track list
+		dtm sync my-projects/github/dotfiles --copy
 
-		Copy files from DIR to \$HOME directory whose path relative to DIR is in the track list
-			dtm sync my-projects/github/dotfiles --copy
+	Create hard links of file from DIR to \$HOME directory whose path relative to DIR is in the track list
+		dtm sync my-projects/github/dotfiles 
 
-		Create hard links of file from DIR to \$HOME directory whose path relative to DIR is in the track list
-			dtm sync my-projects/github/dotfiles 
-
-		Create symbolic links of file from DIR to \$HOME directory whose path relative to DIR is in the track list
-			dtm sync my-projects/github/dotfiles 
+	Create symbolic links of file from DIR to \$HOME directory whose path relative to DIR is in the track list
+		dtm sync my-projects/github/dotfiles 
 
 ENVIRONMENT VARIABLES
-		DTM_DATA_HOME
-			The path where to store data files, such as the list of tracked files. By default it is \$XDG_DATA_HOME/dtm. If \$XDG_DATA_HOME is unset, then \$DTM_DATA_HOME default to \$HOME/.local/share/dtm.
-
-		DTM_GIT_DIR
-				The path of the default git directory. This is used as a fallback if DIR is not specified for the dtm's commands ln, cp, and sync.
+	DTM_DATA_HOME
+		The path where to store data files, such as the list of tracked files. By default it is \$XDG_DATA_HOME/dtm. If \$XDG_DATA_HOME is unset, then \$DTM_DATA_HOME default to \$HOME/.local/share/dtm.
+	DTM_GIT_DIR
+		The path of the default git directory. This is used as a fallback if DIR is not specified for the dtm's commands ln, cp, and sync.
 
 LICENSE
-		Do whatever you wish with the code of dtm.
+	Do whatever you wish with the code of dtm.
 
 AUTHOR
-		Andre Souza Abreu.
-
+	Andre Souza Abreu.
 EOF
 }
 
@@ -116,14 +113,14 @@ function trackFiles() {
 		filename=$1
 		shift
 		if ! [ -f "$filename" ]; then
-			echo "Error, file \"$filename\" does not exist."
-			echo 'Proceeding to the next file.'
+			echo "ERROR: file \"$filename\" does not exist. Skipping it"
 			continue
 		fi
 		getPathRelativeToHome $filename >> ${DTM_TRACKED_FILES_LIST}
 	done
 	# remove duplicated files
-	sort $DTM_TRACKED_FILES_LIST | uniq > $DTM_TRACKED_FILES_LIST
+	LC_ALL=C sort -i $DTM_TRACKED_FILES_LIST | uniq > $DTM_TRACKED_FILES_LIST.tmp
+	mv $DTM_TRACKED_FILES_LIST.tmp $DTM_TRACKED_FILES_LIST
 }
 
 # output the fiels being tracked
@@ -206,11 +203,17 @@ function createLinks() {
 	done < $DTM_TRACKED_FILES_LIST
 }
 
-function syncFromRepo() {
+function syncFrom() {
 	destdir=$1
 	[[ -z $destdir ]] && destdir=${DTM_GIT_DIR}
 	[[ -z $destdir ]] && echo 'ERROR: destination directory not specified.' && exit 1
 	[[ ! -d "$destdir" ]] && echo 'ERROR: invalid directory.' && exit 1
+
+	# whether to create symbolic links
+	[[ "$2" == "--symbolic" ]] && symbolic=1
+
+	# do not create links. Instead, copy the file
+	[[ "$2" == "--copy" ]] && copy=1
 
 	while read file; do
 		fullpath=$destdir/$file
@@ -241,23 +244,23 @@ action=$1
 (( $# > 0 )) && shift
 
 case $action in
-	list|ls)
+	list|ls|-l)
 		getTrackedFiles
 		;;
-	add)
+	add|-a)
 		trackFiles $@
 		;;
-	rm)
+	rm|-r)
 		untrackFiles $@
 		;;
-	link|ln)
+	link|ln|-L)
 		createLinks $@
 		;;
-	copy|cp)
+	copy|cp|-c)
 		createLinks "$1" --copy
 		;;
-	sync)
-		syncFromRepo $@
+	sync|-s)
+		syncFrom $@
 		;;
 	*)
 		showHelp
