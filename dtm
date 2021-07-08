@@ -293,6 +293,15 @@ function sync_dot_files()
       find "$src_full_path" -type f -maxdepth 1 |
         while read fname; do
           fname=${fname##*/}
+          fdest="$destination/$fname"
+          if [[ -f "$fdest" ]]; then
+            if [[ -n $force ]]; then
+              rm -f $fdest
+            else
+              [[ -z $quiet ]] && echo "$file exists, skipping it"
+              continue
+            fi
+          fi
           cp $flag "$src_full_path/$fname" "$destination/$fname"
         done
     else
