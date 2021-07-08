@@ -155,13 +155,15 @@ function track_files()
   fi
 
 	while [ -n "$1" ]; do
-		filename=$1
+		file_name=$1
 		shift
-		if [[ ! -f "$filename" || ! -d "$filename" ]]; then
-			[[ -z $quiet ]] && echo "file $filename does not exist. Skipping it"
+    file_relative_path=$(get_path_relative_to_home $file_name)
+    file_full_path=$HOME/$file_relative_path
+		if [[ ! -f "$file_full_path" && ! -d "$file_full_path" ]]; then
+      [[ -z $quiet ]] && echo "file $file_relative_path does not exist, skipping it"
 			continue
 		fi
-		get_path_relative_to_home $filename >> ${DTM_TRACKED_FILES_LIST}
+    echo $file_relative_path >> ${DTM_TRACKED_FILES_LIST}
 	done
 
 	# remove duplicated files
